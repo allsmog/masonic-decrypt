@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decrypt the Message</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #c9a227;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .encrypted-box {
+            background: #282846;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #a7b0c2;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c9a227;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #c9a227;
+            border-radius: 8px;
+            background: #282846;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        input[type="text"]::placeholder {
+            color: #666;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #c9a227;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #d4af37;
+        }
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #282846;
+            border-radius: 8px;
+            display: none;
+        }
+        .result.show {
+            display: block;
+        }
+        .result.success {
+            border: 2px solid #c9a227;
+        }
+        .result.error {
+            border: 2px solid #e74c3c;
+        }
+        .result h2 {
+            color: #c9a227;
+            margin: 0 0 15px 0;
+            font-size: 1.2rem;
+        }
+        .result .message {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #fff;
+            line-height: 1.4;
+        }
+        .result.error .message {
+            color: #e74c3c;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Encrypted Message</h1>
+
+        <div class="encrypted-box" id="encryptedText">Loading...</div>
+
+        <label for="password">Enter the Key:</label>
+        <input type="text" id="password" placeholder="Enter password..." autocomplete="off" autocapitalize="none">
+
+        <button onclick="decrypt()">DECRYPT</button>
+
+        <div class="result" id="result">
+            <h2>Decrypted Message:</h2>
+            <div class="message" id="decryptedMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        // Get encrypted data from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const encryptedData = urlParams.get('data') || '';
+
+        document.getElementById('encryptedText').textContent = encryptedData || 'No encrypted data found';
+
+        function decrypt() {
+            const password = document.getElementById('password').value.trim();
+            const resultDiv = document.getElementById('result');
+            const messageDiv = document.getElementById('decryptedMessage');
+
+            if (!password) {
+                resultDiv.className = 'result show error';
+                messageDiv.textContent = 'Please enter the key';
+                return;
+            }
+
+            if (!encryptedData) {
+                resultDiv.className = 'result show error';
+                messageDiv.textContent = 'No encrypted data to decrypt';
+                return;
+            }
+
+            try {
+                // Derive key from password using SHA-256 (same as Python)
+                const key = CryptoJS.SHA256(password);
+
+                // Decode base64
+                const combined = CryptoJS.enc.Base64.parse(encryptedData);
+                const combinedBytes = combined.toString(CryptoJS.enc.Hex);
+
+                // Extract IV (first 16 bytes = 32 hex chars) and ciphertext
+                const ivHex = combinedBytes.substring(0, 32);
+                const ciphertextHex = combinedBytes.substring(32);
+
+                const iv = CryptoJS.enc.Hex.parse(ivHex);
+                const ciphertext = CryptoJS.enc.Hex.parse(ciphertextHex);
+
+                // Create cipherParams object
+                const cipherParams = CryptoJS.lib.CipherParams.create({
+                    ciphertext: ciphertext
+                });
+
+                // Decrypt
+                const decrypted = CryptoJS.AES.decrypt(cipherParams, key, {
+                    iv: iv,
+                    mode: CryptoJS.mode.CBC,
+                    padding: CryptoJS.pad.Pkcs7
+                });
+
+                const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
+
+                if (plaintext) {
+                    resultDiv.className = 'result show success';
+                    messageDiv.textContent = plaintext;
+                } else {
+                    resultDiv.className = 'result show error';
+                    messageDiv.textContent = 'Wrong key - try again';
+                }
+            } catch (e) {
+                resultDiv.className = 'result show error';
+                messageDiv.textContent = 'Wrong key - try again';
+            }
+        }
+
+        // Allow Enter key to decrypt
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                decrypt();
+            }
+        });
+    </script>
+</body>
+</html>
