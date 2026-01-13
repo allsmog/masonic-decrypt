@@ -15,286 +15,105 @@
             min-height: 100vh;
         }
         .container {
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
             text-align: center;
         }
         h1 {
             color: #c9a227;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            color: #a7b0c2;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         .demo-area {
             background: #fff;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
         }
 
         .overlay-container {
             position: relative;
-            width: 280px;
-            height: 280px;
+            width: 300px;
+            height: 300px;
             margin: 0 auto;
-            background: #fff;
         }
 
         .share-img {
             position: absolute;
             top: 0;
             left: 0;
-            width: 280px;
-            height: 280px;
-            transition: all 0.8s ease-out;
+            width: 300px;
+            height: 300px;
         }
 
-        .share-a-img {
+        .share-a {
             z-index: 1;
         }
 
-        .share-b-img {
+        .share-b {
             z-index: 2;
             mix-blend-mode: multiply;
-            transform: translate(150px, 0);
-            opacity: 0.9;
+            display: none;
         }
 
-        .labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            padding: 0 20px;
-            transition: opacity 0.5s;
+        .share-b.show {
+            display: block;
         }
 
         .label {
+            margin-top: 15px;
             color: #1a1a2e;
             font-weight: bold;
-            font-size: 0.9rem;
-            padding: 5px 15px;
-            background: #f0f0f0;
-            border-radius: 20px;
-        }
-
-        /* Slider control */
-        .slider-container {
-            margin: 25px 0;
-        }
-
-        .slider-label {
-            color: #c9a227;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 100%;
-            max-width: 400px;
-            height: 12px;
-            border-radius: 6px;
-            background: #282846;
-            outline: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #c9a227;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: #c9a227;
-            cursor: pointer;
-        }
-
-        .slider-hint {
-            color: #a7b0c2;
-            font-size: 0.85rem;
-            margin-top: 8px;
-        }
-
-        /* Buttons */
-        .button-row {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 25px;
         }
 
         button {
-            padding: 12px 30px;
-            font-size: 1rem;
+            padding: 15px 40px;
+            font-size: 1.2rem;
             font-weight: bold;
             background: #c9a227;
             color: #1a1a2e;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
         }
 
         button:hover {
             background: #d4af37;
-            transform: scale(1.05);
-        }
-
-        .btn-outline {
-            background: transparent;
-            border: 2px solid #c9a227;
-            color: #c9a227;
-        }
-
-        .btn-outline:hover {
-            background: #c9a227;
-            color: #1a1a2e;
-        }
-
-        /* Status indicator */
-        .status {
-            padding: 15px 25px;
-            background: #282846;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .status.revealed {
-            border-color: #c9a227;
-            background: #1a1a2e;
-        }
-
-        .status-text {
-            font-size: 1.1rem;
-            color: #a7b0c2;
-        }
-
-        .status.revealed .status-text {
-            color: #c9a227;
-            font-weight: bold;
-        }
-
-        .explanation {
-            padding: 20px;
-            background: #282846;
-            border-radius: 12px;
-            text-align: left;
-        }
-
-        .explanation h3 {
-            color: #c9a227;
-            margin: 0 0 15px 0;
-            text-align: center;
-        }
-
-        .explanation p {
-            color: #a7b0c2;
-            margin: 8px 0;
-            line-height: 1.5;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Visual Cryptography</h1>
-        <p class="subtitle">Drag the slider to overlay the shares</p>
 
         <div class="demo-area">
             <div class="overlay-container">
-                <img src="share1_print_this.png" alt="Share A" class="share-img share-a-img" id="shareA">
-                <img src="share2_print_this.png" alt="Share B" class="share-img share-b-img" id="shareB">
+                <img src="share1_print_this.png" alt="Share A" class="share-img share-a">
+                <img src="share2_print_this.png" alt="Share B" class="share-img share-b" id="shareB">
             </div>
-            <div class="labels" id="labels">
-                <span class="label">Share A</span>
-                <span class="label">Share B</span>
-            </div>
+            <div class="label" id="label">Share A (random noise)</div>
         </div>
 
-        <div class="slider-container">
-            <div class="slider-label">OVERLAY POSITION</div>
-            <input type="range" id="slider" min="0" max="100" value="0" oninput="updateOverlay(this.value)">
-            <div class="slider-hint">Slide right to merge the shares →</div>
-        </div>
-
-        <div class="button-row">
-            <button onclick="animateOverlay()">AUTO MERGE</button>
-            <button class="btn-outline" onclick="resetDemo()">RESET</button>
-        </div>
-
-        <div class="status" id="status">
-            <div class="status-text" id="statusText">Two random patterns - no information visible</div>
-        </div>
-
-        <div class="explanation">
-            <h3>How It Works</h3>
-            <p><strong>Each share is truly random</strong> - there's no hidden image in either one alone.</p>
-            <p>The secret is encoded in the <em>relationship</em> between the two patterns.</p>
-            <p>When overlaid, black pixels align to form the image while other areas stay grey.</p>
-            <p style="color: #c9a227; margin-top: 15px;"><em>"Neither brother holds the secret. Only their union reveals the truth."</em></p>
-        </div>
+        <button onclick="toggle()" id="btn">OVERLAY SHARE B</button>
     </div>
 
     <script>
+        let overlayed = false;
         const shareB = document.getElementById('shareB');
-        const slider = document.getElementById('slider');
-        const labels = document.getElementById('labels');
-        const status = document.getElementById('status');
-        const statusText = document.getElementById('statusText');
+        const label = document.getElementById('label');
+        const btn = document.getElementById('btn');
 
-        function updateOverlay(value) {
-            // Move share B from right (150px offset) to center (0px)
-            const offset = 150 - (value * 1.5);
-            shareB.style.transform = `translate(${offset}px, 0)`;
-
-            // Update labels opacity
-            labels.style.opacity = value > 80 ? 0 : 1;
-
-            // Update status
-            if (value >= 95) {
-                status.classList.add('revealed');
-                statusText.textContent = 'SECRET REVEALED: Square & Compass!';
-            } else if (value > 50) {
-                status.classList.remove('revealed');
-                statusText.textContent = 'Pattern emerging...';
+        function toggle() {
+            overlayed = !overlayed;
+            if (overlayed) {
+                shareB.classList.add('show');
+                label.textContent = 'Both shares overlayed - Secret revealed!';
+                btn.textContent = 'SEPARATE SHARES';
             } else {
-                status.classList.remove('revealed');
-                statusText.textContent = 'Two random patterns - no information visible';
+                shareB.classList.remove('show');
+                label.textContent = 'Share A (random noise)';
+                btn.textContent = 'OVERLAY SHARE B';
             }
-        }
-
-        function animateOverlay() {
-            let value = parseInt(slider.value);
-            const target = 100;
-            const step = 2;
-            const interval = 30;
-
-            const animation = setInterval(() => {
-                value += step;
-                if (value >= target) {
-                    value = target;
-                    clearInterval(animation);
-                }
-                slider.value = value;
-                updateOverlay(value);
-            }, interval);
-        }
-
-        function resetDemo() {
-            slider.value = 0;
-            updateOverlay(0);
         }
     </script>
 </body>
