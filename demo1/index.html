@@ -13,10 +13,9 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
-            overflow-x: hidden;
         }
         .container {
-            max-width: 900px;
+            max-width: 700px;
             margin: 0 auto;
             text-align: center;
         }
@@ -26,107 +25,118 @@
         }
         .subtitle {
             color: #a7b0c2;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
-        .animation-area {
-            position: relative;
-            height: 350px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .share {
-            position: absolute;
-            background: #282846;
+        .demo-area {
+            background: #fff;
             border-radius: 12px;
-            padding: 10px;
-            transition: all 1.5s ease-in-out;
+            padding: 20px;
+            margin-bottom: 20px;
         }
 
-        .share img {
-            width: 200px;
-            height: 200px;
-            border-radius: 8px;
-            display: block;
+        .overlay-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto;
+            background: #fff;
         }
 
-        .share-label {
-            color: #c9a227;
-            font-weight: bold;
-            margin-top: 8px;
-            font-size: 0.9rem;
-            transition: opacity 0.5s;
+        .share-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 280px;
+            transition: all 0.8s ease-out;
         }
 
-        .share-a {
-            left: 10%;
-            transform: translateX(0);
-        }
-
-        .share-b {
-            right: 10%;
-            transform: translateX(0);
-        }
-
-        /* Animation states */
-        .animating .share-a {
-            left: 50%;
-            transform: translateX(-50%);
+        .share-a-img {
             z-index: 1;
         }
 
-        .animating .share-b {
-            right: 50%;
-            transform: translateX(50%);
+        .share-b-img {
             z-index: 2;
-            opacity: 0.85;
+            mix-blend-mode: multiply;
+            transform: translate(150px, 0);
+            opacity: 0.9;
         }
 
-        .animating .share-label {
-            opacity: 0;
+        .labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 0 20px;
+            transition: opacity 0.5s;
         }
 
-        .revealed .share-a,
-        .revealed .share-b {
-            opacity: 0;
-            pointer-events: none;
+        .label {
+            color: #1a1a2e;
+            font-weight: bold;
+            font-size: 0.9rem;
+            padding: 5px 15px;
+            background: #f0f0f0;
+            border-radius: 20px;
         }
 
-        .overlay-result {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%) scale(0.8);
-            opacity: 0;
-            transition: all 0.8s ease-out;
-            background: #282846;
-            border: 3px solid #c9a227;
-            border-radius: 12px;
-            padding: 15px;
+        /* Slider control */
+        .slider-container {
+            margin: 25px 0;
         }
 
-        .overlay-result img {
-            width: 220px;
-            height: 220px;
-            border-radius: 8px;
-        }
-
-        .overlay-result .label {
+        .slider-label {
             color: #c9a227;
             font-weight: bold;
-            margin-top: 10px;
+            margin-bottom: 10px;
         }
 
-        .revealed .overlay-result {
-            opacity: 1;
-            transform: translateX(-50%) scale(1);
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            max-width: 400px;
+            height: 12px;
+            border-radius: 6px;
+            background: #282846;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #c9a227;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #c9a227;
+            cursor: pointer;
+        }
+
+        .slider-hint {
+            color: #a7b0c2;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        /* Buttons */
+        .button-row {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
         }
 
         button {
-            padding: 15px 40px;
-            font-size: 1.2rem;
+            padding: 12px 30px;
+            font-size: 1rem;
             font-weight: bold;
             background: #c9a227;
             color: #1a1a2e;
@@ -141,30 +151,53 @@
             transform: scale(1.05);
         }
 
-        button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #c9a227;
+            color: #c9a227;
+        }
+
+        .btn-outline:hover {
+            background: #c9a227;
+            color: #1a1a2e;
+        }
+
+        /* Status indicator */
+        .status {
+            padding: 15px 25px;
+            background: #282846;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .status.revealed {
+            border-color: #c9a227;
+            background: #1a1a2e;
+        }
+
+        .status-text {
+            font-size: 1.1rem;
+            color: #a7b0c2;
+        }
+
+        .status.revealed .status-text {
+            color: #c9a227;
+            font-weight: bold;
         }
 
         .explanation {
-            margin-top: 30px;
             padding: 20px;
             background: #282846;
             border-radius: 12px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.8s ease-out;
-        }
-
-        .revealed .explanation {
-            opacity: 1;
-            transform: translateY(0);
+            text-align: left;
         }
 
         .explanation h3 {
             color: #c9a227;
             margin: 0 0 15px 0;
+            text-align: center;
         }
 
         .explanation p {
@@ -172,95 +205,96 @@
             margin: 8px 0;
             line-height: 1.5;
         }
-
-        .reset-btn {
-            margin-top: 20px;
-            padding: 10px 25px;
-            font-size: 0.9rem;
-            background: transparent;
-            border: 2px solid #c9a227;
-            color: #c9a227;
-            display: none;
-        }
-
-        .revealed .reset-btn {
-            display: inline-block;
-        }
-
-        .reset-btn:hover {
-            background: #c9a227;
-            color: #1a1a2e;
-        }
-
-        /* Glow effect during merge */
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 10px rgba(201, 162, 39, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(201, 162, 39, 0.8); }
-        }
-
-        .animating .share {
-            animation: glow 1s ease-in-out infinite;
-        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Visual Cryptography</h1>
-        <p class="subtitle">Secrets Through Union</p>
+        <p class="subtitle">Drag the slider to overlay the shares</p>
 
-        <div class="animation-area" id="animationArea">
-            <div class="share share-a">
-                <img src="share1_print_this.png" alt="Share A">
-                <div class="share-label">Share A</div>
+        <div class="demo-area">
+            <div class="overlay-container">
+                <img src="share1_print_this.png" alt="Share A" class="share-img share-a-img" id="shareA">
+                <img src="share2_print_this.png" alt="Share B" class="share-img share-b-img" id="shareB">
             </div>
-
-            <div class="share share-b">
-                <img src="share2_print_this.png" alt="Share B">
-                <div class="share-label">Share B</div>
-            </div>
-
-            <div class="overlay-result">
-                <img src="OVERLAY_PREVIEW.png" alt="Revealed Secret">
-                <div class="label">Secret Revealed</div>
+            <div class="labels" id="labels">
+                <span class="label">Share A</span>
+                <span class="label">Share B</span>
             </div>
         </div>
 
-        <button id="overlayBtn" onclick="startOverlay()">OVERLAY SHARES</button>
+        <div class="slider-container">
+            <div class="slider-label">OVERLAY POSITION</div>
+            <input type="range" id="slider" min="0" max="100" value="0" oninput="updateOverlay(this.value)">
+            <div class="slider-hint">Slide right to merge the shares →</div>
+        </div>
+
+        <div class="button-row">
+            <button onclick="animateOverlay()">AUTO MERGE</button>
+            <button class="btn-outline" onclick="resetDemo()">RESET</button>
+        </div>
+
+        <div class="status" id="status">
+            <div class="status-text" id="statusText">Two random patterns - no information visible</div>
+        </div>
 
         <div class="explanation">
             <h3>How It Works</h3>
-            <p><strong>Neither share contains information alone.</strong></p>
-            <p>Each sheet looks like random noise - because it is.</p>
-            <p>But when combined, the patterns align to reveal the hidden image.</p>
-            <p style="color: #c9a227; margin-top: 15px;"><em>"Two brothers, each holding half a truth. Only together can they reveal the secret."</em></p>
+            <p><strong>Each share is truly random</strong> - there's no hidden image in either one alone.</p>
+            <p>The secret is encoded in the <em>relationship</em> between the two patterns.</p>
+            <p>When overlaid, black pixels align to form the image while other areas stay grey.</p>
+            <p style="color: #c9a227; margin-top: 15px;"><em>"Neither brother holds the secret. Only their union reveals the truth."</em></p>
         </div>
-
-        <button class="reset-btn" onclick="reset()">RESET DEMO</button>
     </div>
 
     <script>
-        const area = document.getElementById('animationArea');
-        const btn = document.getElementById('overlayBtn');
+        const shareB = document.getElementById('shareB');
+        const slider = document.getElementById('slider');
+        const labels = document.getElementById('labels');
+        const status = document.getElementById('status');
+        const statusText = document.getElementById('statusText');
 
-        function startOverlay() {
-            btn.disabled = true;
-            btn.textContent = 'MERGING...';
+        function updateOverlay(value) {
+            // Move share B from right (150px offset) to center (0px)
+            const offset = 150 - (value * 1.5);
+            shareB.style.transform = `translate(${offset}px, 0)`;
 
-            // Start animation
-            area.classList.add('animating');
+            // Update labels opacity
+            labels.style.opacity = value > 80 ? 0 : 1;
 
-            // After shares merge, reveal result
-            setTimeout(() => {
-                area.classList.remove('animating');
-                area.classList.add('revealed');
-                btn.textContent = 'REVEALED!';
-            }, 2000);
+            // Update status
+            if (value >= 95) {
+                status.classList.add('revealed');
+                statusText.textContent = 'SECRET REVEALED: Square & Compass!';
+            } else if (value > 50) {
+                status.classList.remove('revealed');
+                statusText.textContent = 'Pattern emerging...';
+            } else {
+                status.classList.remove('revealed');
+                statusText.textContent = 'Two random patterns - no information visible';
+            }
         }
 
-        function reset() {
-            area.classList.remove('animating', 'revealed');
-            btn.disabled = false;
-            btn.textContent = 'OVERLAY SHARES';
+        function animateOverlay() {
+            let value = parseInt(slider.value);
+            const target = 100;
+            const step = 2;
+            const interval = 30;
+
+            const animation = setInterval(() => {
+                value += step;
+                if (value >= target) {
+                    value = target;
+                    clearInterval(animation);
+                }
+                slider.value = value;
+                updateOverlay(value);
+            }, interval);
+        }
+
+        function resetDemo() {
+            slider.value = 0;
+            updateOverlay(0);
         }
     </script>
 </body>
