@@ -13,6 +13,7 @@
             margin: 0;
             padding: 20px;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         .container {
             max-width: 900px;
@@ -27,32 +28,102 @@
             color: #a7b0c2;
             margin-bottom: 30px;
         }
-        .shares {
+
+        .animation-area {
+            position: relative;
+            height: 350px;
+            margin-bottom: 30px;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
+            align-items: center;
         }
+
         .share {
+            position: absolute;
             background: #282846;
+            border-radius: 12px;
+            padding: 10px;
+            transition: all 1.5s ease-in-out;
+        }
+
+        .share img {
+            width: 200px;
+            height: 200px;
+            border-radius: 8px;
+            display: block;
+        }
+
+        .share-label {
+            color: #c9a227;
+            font-weight: bold;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            transition: opacity 0.5s;
+        }
+
+        .share-a {
+            left: 10%;
+            transform: translateX(0);
+        }
+
+        .share-b {
+            right: 10%;
+            transform: translateX(0);
+        }
+
+        /* Animation states */
+        .animating .share-a {
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        .animating .share-b {
+            right: 50%;
+            transform: translateX(50%);
+            z-index: 2;
+            opacity: 0.85;
+        }
+
+        .animating .share-label {
+            opacity: 0;
+        }
+
+        .revealed .share-a,
+        .revealed .share-b {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .overlay-result {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%) scale(0.8);
+            opacity: 0;
+            transition: all 0.8s ease-out;
+            background: #282846;
+            border: 3px solid #c9a227;
             border-radius: 12px;
             padding: 15px;
         }
-        .share img {
-            max-width: 250px;
-            height: auto;
+
+        .overlay-result img {
+            width: 220px;
+            height: 220px;
             border-radius: 8px;
         }
-        .share-label {
+
+        .overlay-result .label {
             color: #c9a227;
             font-weight: bold;
             margin-top: 10px;
         }
-        .share-desc {
-            color: #a7b0c2;
-            font-size: 0.9rem;
+
+        .revealed .overlay-result {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
         }
+
         button {
             padding: 15px 40px;
             font-size: 1.2rem;
@@ -62,30 +133,73 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            margin-bottom: 30px;
+            transition: all 0.3s;
         }
+
         button:hover {
             background: #d4af37;
+            transform: scale(1.05);
         }
-        .overlay-container {
-            display: none;
-            background: #282846;
-            border: 2px solid #c9a227;
-            border-radius: 12px;
+
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .explanation {
+            margin-top: 30px;
             padding: 20px;
-            margin-top: 20px;
+            background: #282846;
+            border-radius: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease-out;
         }
-        .overlay-container.show {
-            display: block;
+
+        .revealed .explanation {
+            opacity: 1;
+            transform: translateY(0);
         }
-        .overlay-container h2 {
+
+        .explanation h3 {
             color: #c9a227;
-            margin-bottom: 15px;
+            margin: 0 0 15px 0;
         }
-        .overlay-container img {
-            max-width: 300px;
-            height: auto;
-            border-radius: 8px;
+
+        .explanation p {
+            color: #a7b0c2;
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        .reset-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 0.9rem;
+            background: transparent;
+            border: 2px solid #c9a227;
+            color: #c9a227;
+            display: none;
+        }
+
+        .revealed .reset-btn {
+            display: inline-block;
+        }
+
+        .reset-btn:hover {
+            background: #c9a227;
+            color: #1a1a2e;
+        }
+
+        /* Glow effect during merge */
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(201, 162, 39, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(201, 162, 39, 0.8); }
+        }
+
+        .animating .share {
+            animation: glow 1s ease-in-out infinite;
         }
     </style>
 </head>
@@ -94,34 +208,59 @@
         <h1>Visual Cryptography</h1>
         <p class="subtitle">Secrets Through Union</p>
 
-        <div class="shares">
-            <div class="share">
+        <div class="animation-area" id="animationArea">
+            <div class="share share-a">
                 <img src="share1_print_this.png" alt="Share A">
                 <div class="share-label">Share A</div>
-                <div class="share-desc">Looks like random noise</div>
             </div>
-            <div class="share">
+
+            <div class="share share-b">
                 <img src="share2_print_this.png" alt="Share B">
                 <div class="share-label">Share B</div>
-                <div class="share-desc">Also random noise</div>
+            </div>
+
+            <div class="overlay-result">
+                <img src="OVERLAY_PREVIEW.png" alt="Revealed Secret">
+                <div class="label">Secret Revealed</div>
             </div>
         </div>
 
-        <button onclick="reveal()">OVERLAY SHARES</button>
+        <button id="overlayBtn" onclick="startOverlay()">OVERLAY SHARES</button>
 
-        <div class="overlay-container" id="overlay">
-            <h2>The Secret Revealed</h2>
-            <img src="OVERLAY_PREVIEW.png" alt="Overlay Result">
-            <p style="color: #a7b0c2; margin-top: 15px;">
-                Neither share contains information alone.<br>
-                Only together do they reveal the truth.
-            </p>
+        <div class="explanation">
+            <h3>How It Works</h3>
+            <p><strong>Neither share contains information alone.</strong></p>
+            <p>Each sheet looks like random noise - because it is.</p>
+            <p>But when combined, the patterns align to reveal the hidden image.</p>
+            <p style="color: #c9a227; margin-top: 15px;"><em>"Two brothers, each holding half a truth. Only together can they reveal the secret."</em></p>
         </div>
+
+        <button class="reset-btn" onclick="reset()">RESET DEMO</button>
     </div>
 
     <script>
-        function reveal() {
-            document.getElementById('overlay').classList.add('show');
+        const area = document.getElementById('animationArea');
+        const btn = document.getElementById('overlayBtn');
+
+        function startOverlay() {
+            btn.disabled = true;
+            btn.textContent = 'MERGING...';
+
+            // Start animation
+            area.classList.add('animating');
+
+            // After shares merge, reveal result
+            setTimeout(() => {
+                area.classList.remove('animating');
+                area.classList.add('revealed');
+                btn.textContent = 'REVEALED!';
+            }, 2000);
+        }
+
+        function reset() {
+            area.classList.remove('animating', 'revealed');
+            btn.disabled = false;
+            btn.textContent = 'OVERLAY SHARES';
         }
     </script>
 </body>
