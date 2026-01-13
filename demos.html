@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masonic Cryptography Demos</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            color: #c9a227;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #a7b0c2;
+            margin-bottom: 40px;
+        }
+        .demo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .demo-card {
+            background: #282846;
+            border-radius: 12px;
+            padding: 25px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+            border: 2px solid transparent;
+        }
+        .demo-card:hover {
+            transform: translateY(-3px);
+            border-color: #c9a227;
+        }
+        .demo-number {
+            color: #c9a227;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .demo-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .demo-desc {
+            color: #a7b0c2;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Masonic Cryptography</h1>
+        <p class="subtitle">Interactive Demos</p>
+
+        <div class="demo-list">
+            <a href="demo1/" class="demo-card">
+                <div class="demo-number">DEMO 1</div>
+                <div class="demo-title">Visual Cryptography</div>
+                <div class="demo-desc">Secrets Through Union - Two shares reveal a hidden image</div>
+            </a>
+
+            <a href="demo2/" class="demo-card">
+                <div class="demo-number">DEMO 2</div>
+                <div class="demo-title">Steganography</div>
+                <div class="demo-desc">Hidden in Plain Sight - A secret message in a photograph</div>
+            </a>
+
+            <a href="index.html" class="demo-card">
+                <div class="demo-number">DEMO 3</div>
+                <div class="demo-title">Encrypted QR</div>
+                <div class="demo-desc">The Word - Decrypt with the spoken key</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
