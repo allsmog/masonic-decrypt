@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pigpen Cipher</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        h1 {
+            color: #c9a227;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #a7b0c2;
+            margin-bottom: 25px;
+        }
+
+        .input-area {
+            margin-bottom: 25px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: 2px solid #c9a227;
+            border-radius: 8px;
+            background: #282846;
+            color: #fff;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        input::placeholder {
+            color: #666;
+        }
+
+        .output-area {
+            background: #282846;
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 120px;
+            margin-bottom: 25px;
+        }
+        .output-label {
+            color: #c9a227;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .cipher-output {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            min-height: 50px;
+        }
+        .cipher-char {
+            width: 40px;
+            height: 40px;
+        }
+        .cipher-char svg {
+            width: 100%;
+            height: 100%;
+        }
+        .cipher-space {
+            width: 20px;
+        }
+
+        /* Key reference */
+        .key-section {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .key-section h3 {
+            color: #c9a227;
+            margin: 0 0 15px 0;
+        }
+        .key-grids {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .key-grid {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .key-grid-title {
+            color: #a7b0c2;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        .grid-row {
+            display: flex;
+            justify-content: center;
+        }
+        .grid-cell {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #a7b0c2;
+        }
+
+        /* SVG Templates */
+        .templates { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pigpen Cipher</h1>
+        <p class="subtitle">The Masonic Cipher</p>
+
+        <div class="input-area">
+            <input type="text" id="input" placeholder="Type your message..." oninput="encode()" maxlength="30">
+        </div>
+
+        <div class="output-area">
+            <div class="output-label">Encoded Message</div>
+            <div class="cipher-output" id="output"></div>
+        </div>
+
+        <div class="key-section">
+            <h3>Cipher Key</h3>
+            <div class="key-grids">
+                <div class="key-grid">
+                    <div class="key-grid-title">Grid (no dots)</div>
+                    <div class="grid-row">
+                        <div class="grid-cell">A</div>
+                        <div class="grid-cell">B</div>
+                        <div class="grid-cell">C</div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell">D</div>
+                        <div class="grid-cell">E</div>
+                        <div class="grid-cell">F</div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell">G</div>
+                        <div class="grid-cell">H</div>
+                        <div class="grid-cell">I</div>
+                    </div>
+                </div>
+                <div class="key-grid">
+                    <div class="key-grid-title">Grid (with dots)</div>
+                    <div class="grid-row">
+                        <div class="grid-cell">J</div>
+                        <div class="grid-cell">K</div>
+                        <div class="grid-cell">L</div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell">M</div>
+                        <div class="grid-cell">N</div>
+                        <div class="grid-cell">O</div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell">P</div>
+                        <div class="grid-cell">Q</div>
+                        <div class="grid-cell">R</div>
+                    </div>
+                </div>
+                <div class="key-grid">
+                    <div class="key-grid-title">X shapes</div>
+                    <div class="grid-row">
+                        <div class="grid-cell">S</div>
+                        <div class="grid-cell">T</div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell">U</div>
+                        <div class="grid-cell">V</div>
+                    </div>
+                    <div class="grid-row" style="margin-top: 5px; border-top: 1px solid #444; padding-top: 5px;">
+                        <div class="grid-cell">W</div>
+                        <div class="grid-cell">X</div>
+                    </div>
+                    <div class="grid-row">
+                        <div class="grid-cell">Y</div>
+                        <div class="grid-cell">Z</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SVG Templates stored safely in the DOM -->
+    <div class="templates" id="templates">
+        <svg id="svg-A" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-B" viewBox="0 0 40 40"><path d="M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-C" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 30 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-D" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-E" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-F" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 10 L20 10" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-G" viewBox="0 0 40 40"><path d="M20 10 L20 30 L35 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-H" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30 M20 10 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-I" viewBox="0 0 40 40"><path d="M5 10 L20 10 L20 30 L5 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-J" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="22" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-K" viewBox="0 0 40 40"><path d="M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="22" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-L" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 30 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="12" cy="22" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-M" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="18" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-N" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="20" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-O" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 10 L20 10" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="12" cy="18" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-P" viewBox="0 0 40 40"><path d="M20 10 L20 30 L35 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="20" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-Q" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30 M20 10 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="20" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-R" viewBox="0 0 40 40"><path d="M5 10 L20 10 L20 30 L5 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="12" cy="20" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-S" viewBox="0 0 40 40"><path d="M20 5 L35 20 M20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-T" viewBox="0 0 40 40"><path d="M20 5 L5 20 M20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-U" viewBox="0 0 40 40"><path d="M5 20 L20 35 M20 20 L20 35" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-V" viewBox="0 0 40 40"><path d="M5 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
+        <svg id="svg-W" viewBox="0 0 40 40"><path d="M20 5 L35 20 M20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="25" cy="15" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-X" viewBox="0 0 40 40"><path d="M20 5 L5 20 M20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="15" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-Y" viewBox="0 0 40 40"><path d="M5 20 L20 35 M20 20 L20 35" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="15" cy="25" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-Z" viewBox="0 0 40 40"><path d="M5 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="25" r="3" fill="#c9a227"/></svg>
+    </div>
+
+    <script>
+        function encode() {
+            const input = document.getElementById('input').value.toUpperCase();
+            const output = document.getElementById('output');
+
+            // Clear output safely
+            while (output.firstChild) {
+                output.removeChild(output.firstChild);
+            }
+
+            for (const char of input) {
+                if (char === ' ') {
+                    const space = document.createElement('div');
+                    space.className = 'cipher-space';
+                    output.appendChild(space);
+                } else {
+                    const template = document.getElementById('svg-' + char);
+                    if (template) {
+                        const div = document.createElement('div');
+                        div.className = 'cipher-char';
+                        // Clone the SVG node safely
+                        div.appendChild(template.cloneNode(true));
+                        output.appendChild(div);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
