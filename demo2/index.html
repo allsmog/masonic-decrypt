@@ -17,113 +17,210 @@
         .container {
             max-width: 800px;
             margin: 0 auto;
-            text-align: center;
         }
         h1 {
             color: #c9a227;
-            margin-bottom: 10px;
+            text-align: center;
+            margin-bottom: 5px;
         }
         .subtitle {
             color: #a7b0c2;
-            margin-bottom: 30px;
+            text-align: center;
+            margin-bottom: 25px;
         }
+
         .image-container {
             background: #282846;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 30px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
         }
         .image-container img {
             max-width: 100%;
             height: auto;
             border-radius: 8px;
+            max-height: 250px;
         }
         .image-label {
             color: #a7b0c2;
-            margin-top: 15px;
+            margin-top: 10px;
             font-size: 0.9rem;
         }
+
         button {
-            padding: 15px 40px;
-            font-size: 1.2rem;
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 25px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
             font-weight: bold;
             background: #c9a227;
             color: #1a1a2e;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            margin-bottom: 30px;
         }
         button:hover {
             background: #d4af37;
         }
-        .terminal {
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        /* Analysis Panel */
+        .analysis {
             display: none;
             background: #0d0d0d;
             border-radius: 8px;
             padding: 20px;
-            text-align: left;
-            font-family: 'Monaco', 'Menlo', monospace;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
             font-size: 0.85rem;
             margin-bottom: 20px;
         }
-        .terminal.show {
+        .analysis.show {
             display: block;
         }
-        .terminal .prompt {
-            color: #4CAF50;
+        .analysis-line {
+            margin: 8px 0;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease-out;
         }
-        .terminal .command {
-            color: #fff;
+        .analysis-line.visible {
+            opacity: 1;
+            transform: translateX(0);
         }
-        .terminal .output {
-            color: #888;
+        .cyan { color: #00bcd4; }
+        .green { color: #4CAF50; }
+        .yellow { color: #c9a227; }
+        .gray { color: #666; }
+        .white { color: #fff; }
+
+        /* Pixel Proof */
+        .pixel-proof {
+            display: none;
+            background: #282846;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
-        .terminal .cyan {
+        .pixel-proof.show {
+            display: block;
+        }
+        .pixel-proof h3 {
+            color: #c9a227;
+            margin: 0 0 15px 0;
+            text-align: center;
+        }
+        .pixel-grid {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin-bottom: 15px;
+        }
+        .pixel {
+            width: 25px;
+            height: 25px;
+            border-radius: 3px;
+        }
+        .pixel-info {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+        }
+        .pixel-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            align-items: center;
+        }
+        .channel {
+            color: #a7b0c2;
+        }
+        .binary {
             color: #00bcd4;
+            letter-spacing: 1px;
         }
-        .result {
+        .lsb {
+            color: #c9a227;
+            font-weight: bold;
+            background: #3d3d00;
+            padding: 0 3px;
+            border-radius: 2px;
+        }
+        .bit-label {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        /* Bit Stream */
+        .bitstream {
+            display: none;
+            background: #282846;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .bitstream.show {
+            display: block;
+        }
+        .bitstream h3 {
+            color: #c9a227;
+            margin: 0 0 15px 0;
+        }
+        .bits {
+            font-family: monospace;
+            font-size: 1rem;
+            color: #00bcd4;
+            letter-spacing: 2px;
+            word-break: break-all;
+            margin-bottom: 15px;
+            min-height: 24px;
+        }
+        .arrow {
+            color: #c9a227;
+            font-size: 1.5rem;
+            margin: 10px 0;
+        }
+        .decoded-chars {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 3px;
+            min-height: 36px;
+        }
+
+        /* Final Message */
+        .message {
             display: none;
             background: #282846;
             border: 2px solid #c9a227;
             border-radius: 12px;
             padding: 30px;
+            text-align: center;
         }
-        .result.show {
+        .message.show {
             display: block;
         }
-        .result h2 {
+        .message h3 {
             color: #c9a227;
             margin: 0 0 20px 0;
         }
-        .result .message {
-            font-size: 1.5rem;
+        .message-text {
+            font-size: 1.8rem;
             font-weight: bold;
             color: #c9a227;
-            line-height: 1.5;
+            line-height: 1.4;
         }
-        .explanation {
-            margin-top: 20px;
-            padding: 15px;
-            background: #1a1a2e;
-            border-radius: 8px;
-            text-align: left;
-        }
-        .explanation h3 {
-            color: #c9a227;
-            margin: 0 0 10px 0;
-            font-size: 1rem;
-        }
-        .explanation p {
+        .message-note {
             color: #a7b0c2;
-            margin: 5px 0;
+            margin-top: 20px;
             font-size: 0.9rem;
-        }
-        .explanation code {
-            background: #0d0d0d;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: monospace;
         }
     </style>
 </head>
@@ -133,46 +230,141 @@
         <p class="subtitle">Steganography</p>
 
         <div class="image-container">
-            <img src="lodge_photo_with_message.png" alt="Lodge Photo">
-            <div class="image-label">California Street Masonic Center - Just a normal photograph?</div>
+            <img src="lodge_photo_with_message.png" alt="Lodge Photo" id="photo">
+            <div class="image-label">California Street Masonic Center - A normal photograph?</div>
         </div>
 
-        <button onclick="reveal()">EXTRACT HIDDEN MESSAGE</button>
+        <button onclick="startAnalysis()" id="btn">EXTRACT HIDDEN DATA</button>
 
-        <div class="terminal" id="terminal">
-            <span class="prompt">$</span> <span class="command">./scripts/reveal_secret.sh</span><br><br>
-            <span class="output">============================================</span><br>
-            <span class="output">   ANALYZING IMAGE FOR HIDDEN CONTENT...</span><br>
-            <span class="output">============================================</span><br><br>
-            <span class="cyan">Scanning pixel data...</span><br>
-            <span class="cyan">Extracting LSB patterns...</span><br>
-            <span class="cyan">Decoding message...</span><br>
+        <div class="analysis" id="analysis">
+            <div class="analysis-line" id="line1"><span class="cyan">$</span> <span class="white">analyzing image pixels...</span></div>
+            <div class="analysis-line" id="line2"><span class="gray">→ Image size: 7942 × 3424 pixels</span></div>
+            <div class="analysis-line" id="line3"><span class="gray">→ Color depth: 24-bit RGB</span></div>
+            <div class="analysis-line" id="line4"><span class="green">→ LSB pattern detected!</span></div>
+            <div class="analysis-line" id="line5"><span class="yellow">→ Extracting hidden bitstream...</span></div>
         </div>
 
-        <div class="result" id="result">
-            <h2>Secret Message Revealed</h2>
-            <div class="message">MEET ON THE LEVEL<br>PART ON THE SQUARE</div>
-
-            <div class="explanation">
-                <h3>How it works:</h3>
-                <p>Each pixel stores RGB values from <code>0-255</code></p>
-                <p>Changing <code>255</code> to <code>254</code> is invisible to the eye</p>
-                <p>But that single bit encodes data across thousands of pixels</p>
-                <p><em>The profane see a building. We see the message.</em></p>
+        <div class="pixel-proof" id="pixelProof">
+            <h3>Pixel Analysis</h3>
+            <div class="pixel-grid" id="pixelGrid"></div>
+            <div class="pixel-info">
+                <div class="pixel-row">
+                    <span class="channel">Red:</span>
+                    <span><span class="binary">1111111</span><span class="lsb">0</span></span>
+                    <span class="bit-label">= 254 (not 255!)</span>
+                </div>
+                <div class="pixel-row">
+                    <span class="channel">Green:</span>
+                    <span><span class="binary">1111111</span><span class="lsb">1</span></span>
+                    <span class="bit-label">= 255</span>
+                </div>
+                <div class="pixel-row">
+                    <span class="channel">Blue:</span>
+                    <span><span class="binary">1111111</span><span class="lsb">0</span></span>
+                    <span class="bit-label">= 254 (not 255!)</span>
+                </div>
+                <p style="color: #a7b0c2; margin: 15px 0 0; font-size: 0.85rem; text-align: center;">
+                    The last bit of each color channel hides data.<br>
+                    <span style="color: #c9a227;">Invisible to the eye. Readable by code.</span>
+                </p>
             </div>
+        </div>
+
+        <div class="bitstream" id="bitstream">
+            <h3>Decoding Bitstream</h3>
+            <div class="bits" id="bits"></div>
+            <div class="arrow">↓</div>
+            <div class="decoded-chars" id="chars"></div>
+        </div>
+
+        <div class="message" id="message">
+            <h3>Secret Message Extracted</h3>
+            <div class="message-text">MEET ON THE LEVEL<br>PART ON THE SQUARE</div>
+            <div class="message-note">Hidden inside 27 million pixels. Invisible until now.</div>
         </div>
     </div>
 
     <script>
-        function reveal() {
-            const terminal = document.getElementById('terminal');
-            const result = document.getElementById('result');
+        const secretMessage = "MEET ON THE LEVEL, PART ON THE SQUARE";
 
-            terminal.classList.add('show');
+        function startAnalysis() {
+            document.getElementById('btn').disabled = true;
+            document.getElementById('btn').textContent = 'ANALYZING...';
 
+            // Show analysis panel
+            document.getElementById('analysis').classList.add('show');
+
+            // Animate analysis lines
+            const lines = ['line1', 'line2', 'line3', 'line4', 'line5'];
+            lines.forEach((id, i) => {
+                setTimeout(() => {
+                    document.getElementById(id).classList.add('visible');
+                }, i * 400);
+            });
+
+            // Show pixel proof
             setTimeout(() => {
-                result.classList.add('show');
-            }, 2000);
+                document.getElementById('pixelProof').classList.add('show');
+                createPixelGrid();
+            }, 2200);
+
+            // Show bitstream
+            setTimeout(() => {
+                document.getElementById('bitstream').classList.add('show');
+                animateBitstream();
+            }, 3200);
+        }
+
+        function createPixelGrid() {
+            const grid = document.getElementById('pixelGrid');
+            // Create a small grid of "pixels" with slight color variations
+            const colors = [
+                '#8a9ab0', '#8b9ab0', '#8a9bb0', '#8a9ab1', '#8b9ab1',
+                '#8a9ab0', '#8a9ab0', '#8b9ab0', '#8a9ab0', '#8a9ab1',
+                '#8b9ab1', '#8a9ab0', '#8a9bb0', '#8b9ab0', '#8a9ab0'
+            ];
+            colors.forEach(color => {
+                const pixel = document.createElement('div');
+                pixel.className = 'pixel';
+                pixel.style.background = color;
+                grid.appendChild(pixel);
+            });
+        }
+
+        function animateBitstream() {
+            const bitsEl = document.getElementById('bits');
+            const charsEl = document.getElementById('chars');
+
+            // Convert message to binary
+            const chars = secretMessage.substring(0, 10).split('');
+            let bitString = '';
+            let charString = '';
+            let charIndex = 0;
+
+            const interval = setInterval(() => {
+                if (charIndex >= chars.length) {
+                    clearInterval(interval);
+                    bitString += '...';
+                    bitsEl.textContent = bitString;
+
+                    // Show final message
+                    setTimeout(() => {
+                        document.getElementById('message').classList.add('show');
+                        document.getElementById('btn').textContent = 'EXTRACTED!';
+                    }, 800);
+                    return;
+                }
+
+                const char = chars[charIndex];
+                const binary = char.charCodeAt(0).toString(2).padStart(8, '0');
+                bitString += binary + ' ';
+                charString += char;
+
+                bitsEl.textContent = bitString;
+                charsEl.textContent = charString;
+
+                charIndex++;
+            }, 300);
         }
     </script>
 </body>
