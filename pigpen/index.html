@@ -119,6 +119,21 @@
 
         /* SVG Templates */
         .templates { display: none; }
+
+        /* Mobile optimization */
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.4rem; }
+            .subtitle { margin-bottom: 15px; }
+            input[type="text"] { padding: 12px; font-size: 1rem; }
+            .output-area { padding: 15px; min-height: 100px; }
+            .cipher-char { width: 32px; height: 32px; }
+            .cipher-output { gap: 5px; }
+            .key-section { padding: 15px; }
+            .key-grids { gap: 15px; }
+            .key-grid { padding: 10px; }
+            .grid-cell { width: 28px; height: 28px; font-size: 0.65rem; }
+        }
     </style>
 </head>
 <body>
@@ -197,34 +212,44 @@
         </div>
     </div>
 
-    <!-- SVG Templates stored safely in the DOM -->
+    <!-- SVG Templates - Standard Pigpen Cipher -->
+    <!-- Grid 1 (no dots): A-I in 3x3 grid, each letter = surrounding pen walls -->
+    <!-- Grid 2 (with dots): J-R same shapes + dot -->
+    <!-- X shapes: S-V (no dots), W-Z (with dots) -->
     <div class="templates" id="templates">
-        <svg id="svg-A" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-B" viewBox="0 0 40 40"><path d="M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-C" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 30 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-D" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-E" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-F" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 10 L20 10" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-G" viewBox="0 0 40 40"><path d="M20 10 L20 30 L35 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-H" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30 M20 10 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-I" viewBox="0 0 40 40"><path d="M5 10 L20 10 L20 30 L5 30" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-J" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="22" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-K" viewBox="0 0 40 40"><path d="M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="22" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-L" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 30 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="12" cy="22" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-M" viewBox="0 0 40 40"><path d="M20 10 L20 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="18" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-N" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="20" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-O" viewBox="0 0 40 40"><path d="M20 10 L20 30 M5 10 L20 10" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="12" cy="18" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-P" viewBox="0 0 40 40"><path d="M20 10 L20 30 L35 30 M20 10 L35 10" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="20" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-Q" viewBox="0 0 40 40"><path d="M5 10 L35 10 M5 30 L35 30 M20 10 L20 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="28" cy="20" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-R" viewBox="0 0 40 40"><path d="M5 10 L20 10 L20 30 L5 30" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="12" cy="20" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-S" viewBox="0 0 40 40"><path d="M20 5 L35 20 M20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-T" viewBox="0 0 40 40"><path d="M20 5 L5 20 M20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-U" viewBox="0 0 40 40"><path d="M5 20 L20 35 M20 20 L20 35" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-V" viewBox="0 0 40 40"><path d="M5 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/></svg>
-        <svg id="svg-W" viewBox="0 0 40 40"><path d="M20 5 L35 20 M20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="25" cy="15" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-X" viewBox="0 0 40 40"><path d="M20 5 L5 20 M20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="15" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-Y" viewBox="0 0 40 40"><path d="M5 20 L20 35 M20 20 L20 35" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="15" cy="25" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-Z" viewBox="0 0 40 40"><path d="M5 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none"/><circle cx="20" cy="25" r="3" fill="#c9a227"/></svg>
+        <!-- Grid 1: No dots (A-I) -->
+        <svg id="svg-A" viewBox="0 0 40 40"><path d="M5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-B" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-C" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-D" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-E" viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-F" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-G" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-H" viewBox="0 0 40 40"><path d="M5 35 L5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-I" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <!-- Grid 2: With dots (J-R) - same shapes as A-I plus dot -->
+        <svg id="svg-J" viewBox="0 0 40 40"><path d="M5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-K" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-L" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-M" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-N" viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-O" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-P" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-Q" viewBox="0 0 40 40"><path d="M5 35 L5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+        <svg id="svg-R" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
+
+        <!-- X shapes: No dots (S-V) -->
+        <svg id="svg-S" viewBox="0 0 40 40"><path d="M5 20 L20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-T" viewBox="0 0 40 40"><path d="M20 20 L20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-U" viewBox="0 0 40 40"><path d="M5 20 L20 35 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="svg-V" viewBox="0 0 40 40"><path d="M20 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <!-- X shapes: With dots (W-Z) -->
+        <svg id="svg-W" viewBox="0 0 40 40"><path d="M5 20 L20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="15" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-X" viewBox="0 0 40 40"><path d="M20 20 L20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="15" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-Y" viewBox="0 0 40 40"><path d="M5 20 L20 35 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="25" r="3" fill="#c9a227"/></svg>
+        <svg id="svg-Z" viewBox="0 0 40 40"><path d="M20 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="25" r="3" fill="#c9a227"/></svg>
     </div>
 
     <script>

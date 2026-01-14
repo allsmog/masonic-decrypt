@@ -176,6 +176,26 @@
             font-size: 0.85rem;
             line-height: 1.5;
         }
+
+        /* Mobile optimization */
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.4rem; }
+            .subtitle { font-size: 0.9rem; margin-bottom: 15px; }
+            .wheel-container {
+                transform: scale(0.85);
+                transform-origin: top center;
+                margin-bottom: 0;
+            }
+            .wheel-letter { font-size: 0.85rem; }
+            .shift-control { margin-top: -20px; }
+            .shift-btn { width: 44px; height: 44px; font-size: 1.3rem; }
+            .shift-value { font-size: 1.6rem; }
+            .io-section { padding: 15px; }
+            input[type="text"] { padding: 10px; font-size: 1rem; }
+            .output-text { font-size: 1rem; }
+            .info { font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -219,6 +239,7 @@
     <script>
         const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         let shift = 0;
+        let innerLetters = [];
 
         function initWheels() {
             const outerWheel = document.getElementById('outerWheel');
@@ -245,7 +266,9 @@
                 const innerRadius = 75;
                 innerLetter.style.left = (90 + innerRadius * Math.cos(radians) - 8) + 'px';
                 innerLetter.style.top = (90 + innerRadius * Math.sin(radians) - 10) + 'px';
+                innerLetter.style.transition = 'transform 0.3s ease-out';
                 innerWheel.appendChild(innerLetter);
+                innerLetters.push(innerLetter);
             }
         }
 
@@ -255,7 +278,13 @@
 
             // Rotate inner wheel
             const innerWheel = document.getElementById('innerWheel');
-            innerWheel.style.transform = `rotate(${shift * (360/26)}deg)`;
+            const rotationDeg = shift * (360/26);
+            innerWheel.style.transform = `rotate(${rotationDeg}deg)`;
+
+            // Counter-rotate each inner letter so they stay upright
+            innerLetters.forEach(letter => {
+                letter.style.transform = `rotate(${-rotationDeg}deg)`;
+            });
 
             encrypt();
         }
