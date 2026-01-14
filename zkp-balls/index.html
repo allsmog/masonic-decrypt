@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Balls - Zero Knowledge Proof</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #c9a227;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #a7b0c2;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Ball visualization */
+        .balls-container {
+            background: #282846;
+            border-radius: 12px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .hands {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .hand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .hand-label {
+            color: #a7b0c2;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        .ball {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            transition: all 0.5s ease-in-out;
+            box-shadow: inset -10px -10px 30px rgba(0,0,0,0.3),
+                        inset 10px 10px 30px rgba(255,255,255,0.1),
+                        0 5px 15px rgba(0,0,0,0.3);
+        }
+        .ball.red { background: linear-gradient(135deg, #ff6b6b 0%, #c0392b 100%); }
+        .ball.green { background: linear-gradient(135deg, #6bff6b 0%, #27ae60 100%); }
+        .ball.gray { background: linear-gradient(135deg, #888 0%, #555 100%); }
+        .ball.hidden {
+            opacity: 0.3;
+            filter: blur(5px);
+        }
+
+        .shuffle-indicator {
+            color: #c9a227;
+            font-size: 1.5rem;
+            margin: 15px 0;
+            min-height: 40px;
+        }
+
+        /* Controls */
+        .controls {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .btn {
+            padding: 12px 30px;
+            border: 2px solid #c9a227;
+            background: transparent;
+            color: #c9a227;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: all 0.2s;
+        }
+        .btn:hover:not(:disabled) {
+            background: #c9a227;
+            color: #1a1a2e;
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .btn.primary {
+            background: #c9a227;
+            color: #1a1a2e;
+        }
+        .guess-btns {
+            margin-top: 15px;
+        }
+        .guess-btn {
+            min-width: 120px;
+        }
+
+        /* Status */
+        .status {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            min-height: 60px;
+        }
+        .status-line {
+            color: #a7b0c2;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        .status-line .hl { color: #c9a227; font-weight: bold; }
+        .status-line .success { color: #4ade80; font-weight: bold; }
+        .status-line .fail { color: #f87171; font-weight: bold; }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .stat-box {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #c9a227;
+        }
+        .stat-label {
+            font-size: 0.75rem;
+            color: #a7b0c2;
+            margin-top: 5px;
+        }
+
+        /* Confidence */
+        .confidence-section {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .confidence-label {
+            color: #a7b0c2;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .confidence-bar {
+            height: 30px;
+            background: #1a1a2e;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #c9a227, #4ade80);
+            transition: width 0.5s ease-out;
+            border-radius: 15px;
+        }
+        .confidence-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* Mode toggle */
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .mode-btn {
+            padding: 8px 16px;
+            border: 2px solid #c9a227;
+            background: transparent;
+            color: #c9a227;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            background: #c9a227;
+            color: #1a1a2e;
+        }
+
+        /* View toggle */
+        .view-toggle {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #a7b0c2;
+        }
+        .view-toggle label {
+            cursor: pointer;
+        }
+        .view-toggle input {
+            margin-right: 5px;
+        }
+
+        /* Info */
+        .info {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            color: #a7b0c2;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info strong {
+            color: #c9a227;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.3rem; }
+            .ball { width: 55px; height: 55px; }
+            .hands { gap: 40px; }
+            .stats { gap: 8px; }
+            .stat-value { font-size: 1.4rem; }
+            .btn { padding: 10px 20px; font-size: 0.9rem; }
+            .mode-btn { padding: 6px 12px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>The Two Balls</h1>
+        <p class="subtitle">Color-Blind Friend Zero-Knowledge Proof</p>
+
+        <div class="balls-container">
+            <div class="hands">
+                <div class="hand">
+                    <div class="hand-label">LEFT HAND</div>
+                    <div class="ball" id="leftBall"></div>
+                </div>
+                <div class="hand">
+                    <div class="hand-label">RIGHT HAND</div>
+                    <div class="ball" id="rightBall"></div>
+                </div>
+            </div>
+            <div class="shuffle-indicator" id="shuffleIndicator"></div>
+            <div class="view-toggle">
+                <label>
+                    <input type="checkbox" id="showColors" checked onchange="updateBallDisplay()">
+                    Show true colors (your view)
+                </label>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="modeDiff" onclick="setMode(true)">Balls ARE different</button>
+                <button class="mode-btn" id="modeSame" onclick="setMode(false)">Balls are SAME color</button>
+            </div>
+
+            <div class="status" id="status">
+                <div class="status-line">You claim the balls are <span class="hl">different colors</span>.</div>
+                <div class="status-line">Click <span class="hl">Shuffle</span> - your friend will swap (or not) behind their back.</div>
+            </div>
+
+            <button class="btn primary" id="shuffleBtn" onclick="shuffle()">Shuffle Behind Back</button>
+
+            <div class="guess-btns" id="guessBtns" style="display: none;">
+                <div style="color: #a7b0c2; margin-bottom: 10px;">Did they swap?</div>
+                <button class="btn guess-btn" onclick="makeGuess(true)">SWAPPED</button>
+                <button class="btn guess-btn" onclick="makeGuess(false)">NOT SWAPPED</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-value" id="roundNum">0</div>
+                <div class="stat-label">ROUNDS</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="correctNum">0</div>
+                <div class="stat-label">CORRECT</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="wrongNum">0</div>
+                <div class="stat-label">WRONG</div>
+            </div>
+        </div>
+
+        <div class="confidence-section">
+            <div class="confidence-label">Friend's confidence that balls are different colors:</div>
+            <div class="confidence-bar">
+                <div class="confidence-fill" id="confidenceFill" style="width: 0%"></div>
+                <div class="confidence-text" id="confidenceText">0%</div>
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>The scenario:</strong> Your friend is color-blind. You want to prove the two balls are different colors
+            without telling them which is which.
+            <br><br>
+            <strong>The protocol:</strong> They hold one ball in each hand, then swap (or not) behind their back.
+            You tell them if they swapped. If you're consistently right, they become convinced the balls ARE different.
+            <br><br>
+            <strong>Why it works:</strong> If the balls were the same color, you'd be guessing randomly (50%).
+            After n correct guesses, the chance you're lying drops to <strong>(1/2)^n</strong>.
+            <br><br>
+            <strong>Zero-knowledge:</strong> Your friend never learns which ball is which color!
+        </div>
+    </div>
+
+    <script>
+        let ballsAreDifferent = true;
+        let leftIsRed = true; // True color state
+        let didSwap = false;
+        let rounds = 0;
+        let correct = 0;
+        let wrong = 0;
+        let gameState = 'ready'; // ready, shuffled
+
+        const leftBall = document.getElementById('leftBall');
+        const rightBall = document.getElementById('rightBall');
+        const status = document.getElementById('status');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const guessBtns = document.getElementById('guessBtns');
+        const shuffleIndicator = document.getElementById('shuffleIndicator');
+
+        function setStatus(lines) {
+            status.textContent = '';
+            lines.forEach(function(lineData) {
+                const div = document.createElement('div');
+                div.className = 'status-line';
+                if (typeof lineData === 'string') {
+                    div.textContent = lineData;
+                } else {
+                    lineData.forEach(function(part) {
+                        const span = document.createElement('span');
+                        span.textContent = part.text;
+                        if (part.cls) span.className = part.cls;
+                        div.appendChild(span);
+                    });
+                }
+                status.appendChild(div);
+            });
+        }
+
+        function setMode(different) {
+            ballsAreDifferent = different;
+            document.getElementById('modeDiff').classList.toggle('active', different);
+            document.getElementById('modeSame').classList.toggle('active', !different);
+            resetGame();
+        }
+
+        function resetGame() {
+            rounds = 0;
+            correct = 0;
+            wrong = 0;
+            gameState = 'ready';
+            leftIsRed = true;
+            updateStats();
+            updateConfidence();
+            updateBallDisplay();
+            shuffleIndicator.textContent = '';
+
+            const modeText = ballsAreDifferent ? 'different colors' : 'the SAME color';
+            setStatus([
+                [{text: 'You claim the balls are '}, {text: modeText, cls: 'hl'}, {text: '.'}],
+                [{text: 'Click '}, {text: 'Shuffle', cls: 'hl'}, {text: ' - your friend will swap (or not) behind their back.'}]
+            ]);
+
+            shuffleBtn.disabled = false;
+            shuffleBtn.textContent = 'Shuffle Behind Back';
+            guessBtns.style.display = 'none';
+        }
+
+        function updateBallDisplay() {
+            const showColors = document.getElementById('showColors').checked;
+
+            if (showColors) {
+                leftBall.className = 'ball ' + (leftIsRed ? 'red' : 'green');
+                rightBall.className = 'ball ' + (leftIsRed ? 'green' : (ballsAreDifferent ? 'green' : 'red'));
+
+                if (!ballsAreDifferent) {
+                    // Both balls same color (red)
+                    leftBall.className = 'ball red';
+                    rightBall.className = 'ball red';
+                }
+            } else {
+                // Color-blind view - both gray
+                leftBall.className = 'ball gray';
+                rightBall.className = 'ball gray';
+            }
+
+            if (gameState === 'shuffled') {
+                leftBall.classList.add('hidden');
+                rightBall.classList.add('hidden');
+            }
+        }
+
+        function shuffle() {
+            if (gameState !== 'ready') return;
+
+            gameState = 'shuffled';
+
+            // Randomly decide to swap or not
+            didSwap = Math.random() < 0.5;
+
+            // Actually swap the ball positions if swapped
+            if (didSwap) {
+                leftIsRed = !leftIsRed;
+            }
+
+            // Hide balls during shuffle
+            leftBall.classList.add('hidden');
+            rightBall.classList.add('hidden');
+
+            shuffleIndicator.textContent = '🔀 Shuffling behind back...';
+
+            setStatus([
+                'Your friend put their hands behind their back...',
+                [{text: 'Did they swap? Make your guess!', cls: 'hl'}]
+            ]);
+
+            shuffleBtn.disabled = true;
+            guessBtns.style.display = 'block';
+        }
+
+        function makeGuess(guessedSwap) {
+            if (gameState !== 'shuffled') return;
+
+            rounds++;
+            let isCorrect = false;
+
+            if (ballsAreDifferent) {
+                // You can actually tell - check if guess matches reality
+                isCorrect = (guessedSwap === didSwap);
+            } else {
+                // Balls are same color - you're just guessing
+                isCorrect = (guessedSwap === didSwap); // 50% chance
+            }
+
+            gameState = 'ready';
+            guessBtns.style.display = 'none';
+
+            // Reveal balls
+            leftBall.classList.remove('hidden');
+            rightBall.classList.remove('hidden');
+            updateBallDisplay();
+
+            const swapText = didSwap ? 'DID swap' : 'did NOT swap';
+            const guessText = guessedSwap ? 'SWAPPED' : 'NOT SWAPPED';
+
+            if (isCorrect) {
+                correct++;
+                shuffleIndicator.textContent = '✓ Correct!';
+                setStatus([
+                    [{text: 'You guessed: '}, {text: guessText, cls: 'hl'}],
+                    [{text: 'They '}, {text: swapText, cls: 'hl'}, {text: '. '}, {text: 'CORRECT!', cls: 'success'}]
+                ]);
+            } else {
+                wrong++;
+                shuffleIndicator.textContent = '✗ Wrong!';
+                setStatus([
+                    [{text: 'You guessed: '}, {text: guessText, cls: 'hl'}],
+                    [{text: 'They '}, {text: swapText, cls: 'hl'}, {text: '. '}, {text: 'WRONG!', cls: 'fail'}]
+                ]);
+            }
+
+            updateStats();
+            updateConfidence();
+
+            setTimeout(function() {
+                shuffleBtn.disabled = false;
+                shuffleBtn.textContent = 'Next Round';
+                shuffleIndicator.textContent = '';
+            }, 1500);
+        }
+
+        function updateStats() {
+            document.getElementById('roundNum').textContent = rounds;
+            document.getElementById('correctNum').textContent = correct;
+            document.getElementById('wrongNum').textContent = wrong;
+        }
+
+        function updateConfidence() {
+            let confidence = 0;
+            if (wrong === 0 && correct > 0) {
+                confidence = (1 - Math.pow(0.5, correct)) * 100;
+            }
+
+            document.getElementById('confidenceFill').style.width = confidence + '%';
+            document.getElementById('confidenceText').textContent = confidence.toFixed(1) + '%';
+        }
+
+        // Initialize
+        resetGame();
+    </script>
+</body>
+</html>
