@@ -199,6 +199,23 @@
             color: #1a1a2e;
         }
 
+        /* Hidden Peggy */
+        #peggyGroup.hidden {
+            opacity: 0;
+        }
+        #peggyGroup {
+            transition: opacity 0.3s;
+        }
+        .mystery-indicator {
+            font-size: 24px;
+            fill: #c9a227;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .mystery-indicator.show {
+            opacity: 1;
+        }
+
         /* Mobile */
         @media (max-width: 600px) {
             body { padding: 15px; }
@@ -249,6 +266,9 @@
                     <circle cx="150" cy="40" r="10" fill="#4ade80" id="peggy"/>
                     <text x="150" y="44" text-anchor="middle" fill="#1a1a2e" font-size="9" font-weight="bold" id="peggyLabel">P</text>
                 </g>
+
+                <!-- Mystery indicator when Peggy is hidden -->
+                <text x="150" y="145" text-anchor="middle" class="mystery-indicator" id="mysteryIndicator">?</text>
             </svg>
         </div>
 
@@ -318,6 +338,8 @@
 
         const peggy = document.getElementById('peggy');
         const peggyLabel = document.getElementById('peggyLabel');
+        const peggyGroup = document.getElementById('peggyGroup');
+        const mysteryIndicator = document.getElementById('mysteryIndicator');
         const status = document.getElementById('status');
         const startBtn = document.getElementById('startBtn');
         const pathBtns = document.getElementById('pathBtns');
@@ -358,9 +380,13 @@
             updateStats();
             updateConfidence();
             movePeggy(150, 40);
+            peggyGroup.classList.remove('hidden');
+            mysteryIndicator.classList.remove('show');
+
+            const modeDesc = knowsPassword ? '(Victor\'s view - her path will be hidden)' : '(You\'ll see her path - watch her get caught!)';
             setStatus([
                 [{text: 'Click '}, {text: 'Start Round', cls: 'hl'}, {text: ' to begin.'}],
-                'Peggy will enter the cave.'
+                modeDesc
             ]);
             startBtn.disabled = false;
             startBtn.textContent = 'Start Round';
@@ -381,11 +407,25 @@
                 movePeggy(230, 130);
             }
 
-            setStatus([
-                'Peggy has entered the cave.',
-                [{text: '(Victor can\'t see which path)'}],
-                [{text: 'Victor, call which path she should exit from!', cls: 'hl'}]
-            ]);
+            // In "knows password" mode, hide Peggy (Victor's view - can't see inside)
+            // In "bluffing" mode, show Peggy (educational - see she might get caught)
+            if (knowsPassword) {
+                peggyGroup.classList.add('hidden');
+                mysteryIndicator.classList.add('show');
+                setStatus([
+                    'Peggy has entered the cave.',
+                    [{text: '(Victor can\'t see which path - hidden from view)', cls: 'hl'}],
+                    [{text: 'Victor, call which path she should exit from!'}]
+                ]);
+            } else {
+                peggyGroup.classList.remove('hidden');
+                mysteryIndicator.classList.remove('show');
+                setStatus([
+                    [{text: 'Peggy entered path '}, {text: peggyPath, cls: 'hl'}, {text: ' (you can see - she\'s bluffing!)'}],
+                    [{text: 'Victor, call which path she should exit from!'}]
+                ]);
+            }
+
             startBtn.disabled = true;
             pathBtns.style.display = 'block';
         }
@@ -411,6 +451,10 @@
 
             gameState = 'revealed';
             pathBtns.style.display = 'none';
+
+            // Show Peggy again and hide mystery indicator
+            peggyGroup.classList.remove('hidden');
+            mysteryIndicator.classList.remove('show');
 
             // Animate Peggy exiting
             movePeggy(150, 40);
