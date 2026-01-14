@@ -276,9 +276,9 @@
             shift = ((shift + delta) % 26 + 26) % 26;
             document.getElementById('shiftValue').textContent = shift;
 
-            // Rotate inner wheel
+            // Rotate inner wheel (negative = counter-clockwise so inner A moves to align with shifted letter)
             const innerWheel = document.getElementById('innerWheel');
-            const rotationDeg = shift * (360/26);
+            const rotationDeg = -shift * (360/26);
             innerWheel.style.transform = `rotate(${rotationDeg}deg)`;
 
             // Counter-rotate each inner letter so they stay upright

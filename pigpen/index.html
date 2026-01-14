@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pigpen Cipher</title>
     <style>
+        @font-face {
+            font-family: 'PigpenCipher';
+            src: url('PigPenCodeFont.ttf') format('truetype');
+        }
         * { box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -59,25 +63,16 @@
             margin-bottom: 15px;
         }
         .cipher-output {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            min-height: 50px;
-        }
-        .cipher-char {
-            width: 40px;
-            height: 40px;
-        }
-        .cipher-char svg {
-            width: 100%;
-            height: 100%;
-        }
-        .cipher-space {
-            width: 20px;
+            font-family: 'PigpenCipher', sans-serif;
+            font-size: 3rem;
+            color: #c9a227;
+            letter-spacing: 8px;
+            word-spacing: 15px;
+            line-height: 1.5;
+            min-height: 60px;
         }
 
-        /* Key reference */
+        /* Key reference using the font */
         .key-section {
             background: #282846;
             border-radius: 12px;
@@ -87,38 +82,32 @@
             color: #c9a227;
             margin: 0 0 15px 0;
         }
-        .key-grids {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-        }
         .key-grid {
-            background: #1a1a2e;
-            border-radius: 8px;
-            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 5px;
+            max-width: 450px;
+            margin: 0 auto;
         }
-        .key-grid-title {
-            color: #a7b0c2;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-        }
-        .grid-row {
+        .key-item {
             display: flex;
-            justify-content: center;
-        }
-        .grid-cell {
-            width: 35px;
-            height: 35px;
-            display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            color: #a7b0c2;
+            padding: 8px 4px;
+            background: #1a1a2e;
+            border-radius: 4px;
         }
-
-        /* SVG Templates */
-        .templates { display: none; }
+        .key-symbol {
+            font-family: 'PigpenCipher', sans-serif;
+            font-size: 1.8rem;
+            color: #c9a227;
+            line-height: 1;
+        }
+        .key-letter {
+            font-size: 0.7rem;
+            color: #a7b0c2;
+            margin-top: 4px;
+        }
 
         /* Mobile optimization */
         @media (max-width: 600px) {
@@ -127,12 +116,12 @@
             .subtitle { margin-bottom: 15px; }
             input[type="text"] { padding: 12px; font-size: 1rem; }
             .output-area { padding: 15px; min-height: 100px; }
-            .cipher-char { width: 32px; height: 32px; }
-            .cipher-output { gap: 5px; }
+            .cipher-output { font-size: 2rem; letter-spacing: 5px; }
             .key-section { padding: 15px; }
-            .key-grids { gap: 15px; }
-            .key-grid { padding: 10px; }
-            .grid-cell { width: 28px; height: 28px; font-size: 0.65rem; }
+            .key-grid { grid-template-columns: repeat(6, 1fr); gap: 3px; }
+            .key-item { padding: 6px 2px; }
+            .key-symbol { font-size: 1.4rem; }
+            .key-letter { font-size: 0.6rem; }
         }
     </style>
 </head>
@@ -152,133 +141,49 @@
 
         <div class="key-section">
             <h3>Cipher Key</h3>
-            <div class="key-grids">
-                <div class="key-grid">
-                    <div class="key-grid-title">Grid (no dots)</div>
-                    <div class="grid-row">
-                        <div class="grid-cell">A</div>
-                        <div class="grid-cell">B</div>
-                        <div class="grid-cell">C</div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell">D</div>
-                        <div class="grid-cell">E</div>
-                        <div class="grid-cell">F</div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell">G</div>
-                        <div class="grid-cell">H</div>
-                        <div class="grid-cell">I</div>
-                    </div>
-                </div>
-                <div class="key-grid">
-                    <div class="key-grid-title">Grid (with dots)</div>
-                    <div class="grid-row">
-                        <div class="grid-cell">J</div>
-                        <div class="grid-cell">K</div>
-                        <div class="grid-cell">L</div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell">M</div>
-                        <div class="grid-cell">N</div>
-                        <div class="grid-cell">O</div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell">P</div>
-                        <div class="grid-cell">Q</div>
-                        <div class="grid-cell">R</div>
-                    </div>
-                </div>
-                <div class="key-grid">
-                    <div class="key-grid-title">X shapes</div>
-                    <div class="grid-row">
-                        <div class="grid-cell">S</div>
-                        <div class="grid-cell">T</div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell">U</div>
-                        <div class="grid-cell">V</div>
-                    </div>
-                    <div class="grid-row" style="margin-top: 5px; border-top: 1px solid #444; padding-top: 5px;">
-                        <div class="grid-cell">W</div>
-                        <div class="grid-cell">X</div>
-                    </div>
-                    <div class="grid-row">
-                        <div class="grid-cell">Y</div>
-                        <div class="grid-cell">Z</div>
-                    </div>
-                </div>
-            </div>
+            <div class="key-grid" id="keyGrid"></div>
         </div>
     </div>
 
-    <!-- SVG Templates - Standard Pigpen Cipher -->
-    <!-- Grid 1 (no dots): A-I in 3x3 grid, each letter = surrounding pen walls -->
-    <!-- Grid 2 (with dots): J-R same shapes + dot -->
-    <!-- X shapes: S-V (no dots), W-Z (with dots) -->
-    <div class="templates" id="templates">
-        <!-- Grid 1: No dots (A-I) -->
-        <svg id="svg-A" viewBox="0 0 40 40"><path d="M5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-B" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-C" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-D" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-E" viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-F" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-G" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-H" viewBox="0 0 40 40"><path d="M5 35 L5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-I" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-
-        <!-- Grid 2: With dots (J-R) - same shapes as A-I plus dot -->
-        <svg id="svg-J" viewBox="0 0 40 40"><path d="M5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-K" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35 L35 5" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-L" viewBox="0 0 40 40"><path d="M5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-M" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-N" viewBox="0 0 40 40"><rect x="5" y="5" width="30" height="30" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-O" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-P" viewBox="0 0 40 40"><path d="M5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-Q" viewBox="0 0 40 40"><path d="M5 35 L5 5 L35 5 L35 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-        <svg id="svg-R" viewBox="0 0 40 40"><path d="M35 5 L5 5 L5 35" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="20" r="4" fill="#c9a227"/></svg>
-
-        <!-- X shapes: No dots (S-V) -->
-        <svg id="svg-S" viewBox="0 0 40 40"><path d="M5 20 L20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-T" viewBox="0 0 40 40"><path d="M20 20 L20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-U" viewBox="0 0 40 40"><path d="M5 20 L20 35 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <svg id="svg-V" viewBox="0 0 40 40"><path d="M20 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-
-        <!-- X shapes: With dots (W-Z) -->
-        <svg id="svg-W" viewBox="0 0 40 40"><path d="M5 20 L20 5 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="15" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-X" viewBox="0 0 40 40"><path d="M20 20 L20 5 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="15" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-Y" viewBox="0 0 40 40"><path d="M5 20 L20 35 L20 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="15" cy="25" r="3" fill="#c9a227"/></svg>
-        <svg id="svg-Z" viewBox="0 0 40 40"><path d="M20 20 L20 35 L35 20" stroke="#c9a227" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="25" cy="25" r="3" fill="#c9a227"/></svg>
-    </div>
-
     <script>
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
         function encode() {
             const input = document.getElementById('input').value.toUpperCase();
             const output = document.getElementById('output');
 
-            // Clear output safely
-            while (output.firstChild) {
-                output.removeChild(output.firstChild);
-            }
-
+            // Filter to only letters and spaces
+            let result = '';
             for (const char of input) {
-                if (char === ' ') {
-                    const space = document.createElement('div');
-                    space.className = 'cipher-space';
-                    output.appendChild(space);
-                } else {
-                    const template = document.getElementById('svg-' + char);
-                    if (template) {
-                        const div = document.createElement('div');
-                        div.className = 'cipher-char';
-                        // Clone the SVG node safely
-                        div.appendChild(template.cloneNode(true));
-                        output.appendChild(div);
-                    }
+                if (alphabet.includes(char) || char === ' ') {
+                    result += char;
                 }
             }
+
+            output.textContent = result;
         }
+
+        function initKeyGrid() {
+            const grid = document.getElementById('keyGrid');
+            for (const letter of alphabet) {
+                const item = document.createElement('div');
+                item.className = 'key-item';
+
+                const symbol = document.createElement('div');
+                symbol.className = 'key-symbol';
+                symbol.textContent = letter;
+
+                const label = document.createElement('div');
+                label.className = 'key-letter';
+                label.textContent = letter;
+
+                item.appendChild(symbol);
+                item.appendChild(label);
+                grid.appendChild(item);
+            }
+        }
+
+        initKeyGrid();
     </script>
 </body>
 </html>

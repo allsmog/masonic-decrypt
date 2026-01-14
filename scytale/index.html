@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scytale Cipher</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #c9a227;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #a7b0c2;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* Input section */
+        .input-section {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .input-row {
+            margin-bottom: 15px;
+        }
+        .input-label {
+            color: #c9a227;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #1a1a2e;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        input:focus {
+            border-color: #c9a227;
+            outline: none;
+        }
+
+        /* Diameter control */
+        .diameter-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .diameter-label {
+            color: #a7b0c2;
+            min-width: 120px;
+        }
+        input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #444;
+            border-radius: 4px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #c9a227;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .diameter-value {
+            color: #c9a227;
+            font-weight: bold;
+            font-size: 1.2rem;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        /* Scytale visualization */
+        .scytale-viz {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .viz-title {
+            color: #c9a227;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        /* Cylinder view */
+        .cylinder-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            perspective: 800px;
+        }
+        .cylinder {
+            position: relative;
+            width: 120px;
+            background: linear-gradient(90deg, #5c4a1f 0%, #8b7355 20%, #c9a227 50%, #8b7355 80%, #5c4a1f 100%);
+            border-radius: 10px;
+            padding: 15px 10px;
+            transform: rotateX(10deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .cylinder::before, .cylinder::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(90deg, #3d3219 0%, #5c4a1f 50%, #3d3219 100%);
+            border-radius: 50%;
+        }
+        .cylinder::before { top: -10px; }
+        .cylinder::after { bottom: -10px; }
+        .cylinder-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #1a1a2e;
+            line-height: 1.6;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .cylinder-row {
+            white-space: nowrap;
+            letter-spacing: 2px;
+        }
+
+        /* Unwrapped strip */
+        .strip-container {
+            overflow-x: auto;
+            padding: 10px 0;
+        }
+        .strip {
+            display: flex;
+            background: linear-gradient(180deg, #d4b896 0%, #c9a227 50%, #d4b896 100%);
+            padding: 8px 15px;
+            border-radius: 4px;
+            min-width: fit-content;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .strip-char {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1a1a2e;
+            padding: 5px 3px;
+            min-width: 20px;
+            text-align: center;
+        }
+        .strip-char.space {
+            opacity: 0.3;
+        }
+
+        /* Output */
+        .output-section {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .output-label {
+            color: #a7b0c2;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .output-text {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            color: #c9a227;
+            letter-spacing: 3px;
+            word-break: break-all;
+            min-height: 30px;
+        }
+
+        /* Info */
+        .info {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            color: #a7b0c2;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info strong {
+            color: #c9a227;
+        }
+
+        /* Animation toggle */
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .mode-btn {
+            padding: 8px 20px;
+            border: 2px solid #c9a227;
+            background: transparent;
+            color: #c9a227;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .mode-btn.active {
+            background: #c9a227;
+            color: #1a1a2e;
+        }
+        .mode-btn:hover:not(.active) {
+            background: rgba(201, 162, 39, 0.2);
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body { padding: 15px; }
+            h1 { font-size: 1.4rem; }
+            .cylinder { width: 100px; }
+            .cylinder-text { font-size: 0.75rem; }
+            .strip-char { font-size: 0.9rem; min-width: 16px; padding: 4px 2px; }
+            .mode-btn { padding: 6px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Scytale Cipher</h1>
+        <p class="subtitle">Ancient Spartan encryption device</p>
+
+        <div class="input-section">
+            <div class="input-row">
+                <div class="input-label">SECRET MESSAGE</div>
+                <input type="text" id="message" value="MEET AT DAWN BY THE TEMPLE" oninput="updateCipher()" maxlength="50">
+            </div>
+            <div class="input-row">
+                <div class="input-label">ROD DIAMETER (columns)</div>
+                <div class="diameter-control">
+                    <input type="range" id="diameter" min="3" max="10" value="5" oninput="updateCipher()">
+                    <div class="diameter-value" id="diameterValue">5</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scytale-viz">
+            <div class="mode-toggle">
+                <button class="mode-btn active" id="btnWrapped" onclick="setMode('wrapped')">Wrapped (Readable)</button>
+                <button class="mode-btn" id="btnUnwrapped" onclick="setMode('unwrapped')">Unwrapped (Cipher)</button>
+            </div>
+
+            <div id="wrappedView">
+                <div class="viz-title">Message wrapped around the rod:</div>
+                <div class="cylinder-container">
+                    <div class="cylinder">
+                        <div class="cylinder-text" id="cylinderText"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="unwrappedView" style="display: none;">
+                <div class="viz-title">Leather strip unwrapped (gibberish!):</div>
+                <div class="strip-container">
+                    <div class="strip" id="strip"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <div class="output-label">TRANSMITTED CIPHER TEXT:</div>
+            <div class="output-text" id="cipherOutput"></div>
+        </div>
+
+        <div class="info">
+            <strong>How it works:</strong> The Spartans wrapped a leather strip around a wooden rod called a <strong>scytale</strong>.
+            The message was written horizontally across the wrapped strip. When unwrapped, the letters appeared scrambled.
+            Only someone with a rod of the <strong>same diameter</strong> could read the message by re-wrapping the strip.
+            <br><br>
+            <strong>Try it:</strong> Change the rod diameter to see how the cipher changes!
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'wrapped';
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btnWrapped').classList.toggle('active', mode === 'wrapped');
+            document.getElementById('btnUnwrapped').classList.toggle('active', mode === 'unwrapped');
+            document.getElementById('wrappedView').style.display = mode === 'wrapped' ? 'block' : 'none';
+            document.getElementById('unwrappedView').style.display = mode === 'unwrapped' ? 'block' : 'none';
+        }
+
+        function updateCipher() {
+            const message = document.getElementById('message').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const diameter = parseInt(document.getElementById('diameter').value);
+            document.getElementById('diameterValue').textContent = diameter;
+
+            // Pad message to fill complete rows
+            const cols = diameter;
+            const rows = Math.ceil(message.length / cols);
+            const paddedMessage = message.padEnd(rows * cols, 'X');
+
+            // Create the grid (write horizontally, read vertically for cipher)
+            const grid = [];
+            for (let r = 0; r < rows; r++) {
+                grid.push(paddedMessage.slice(r * cols, (r + 1) * cols));
+            }
+
+            // Display wrapped view (readable - horizontal rows)
+            const cylinderText = document.getElementById('cylinderText');
+            cylinderText.textContent = '';
+            grid.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'cylinder-row';
+                rowDiv.textContent = row;
+                cylinderText.appendChild(rowDiv);
+            });
+
+            // Generate cipher text (read vertically)
+            let cipherText = '';
+            for (let c = 0; c < cols; c++) {
+                for (let r = 0; r < rows; r++) {
+                    cipherText += grid[r][c];
+                }
+            }
+
+            // Display unwrapped strip
+            const strip = document.getElementById('strip');
+            strip.textContent = '';
+            cipherText.split('').forEach(char => {
+                const charDiv = document.createElement('div');
+                charDiv.className = 'strip-char';
+                charDiv.textContent = char;
+                strip.appendChild(charDiv);
+            });
+
+            // Display cipher output
+            document.getElementById('cipherOutput').textContent = cipherText;
+        }
+
+        // Initialize
+        updateCipher();
+    </script>
+</body>
+</html>

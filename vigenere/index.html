@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigenere Cipher</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #c9a227;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #a7b0c2;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* Input section */
+        .input-section {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .input-label {
+            color: #c9a227;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #444;
+            border-radius: 8px;
+            background: #1a1a2e;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        input:focus {
+            border-color: #c9a227;
+            outline: none;
+        }
+
+        /* Output section */
+        .output-section {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .output-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .output-row:last-child { margin-bottom: 0; }
+        .output-label {
+            color: #a7b0c2;
+            font-size: 0.8rem;
+            min-width: 80px;
+        }
+        .char-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+        }
+        .char-box {
+            width: 28px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .char-box.plaintext { background: #3a3a5c; color: #fff; }
+        .char-box.keyword { background: #4a3a1c; color: #c9a227; }
+        .char-box.ciphertext { background: #1c3a2c; color: #4ade80; }
+        .char-box.active { transform: scale(1.15); box-shadow: 0 0 10px currentColor; }
+
+        /* Tableau */
+        .tableau-section {
+            background: #282846;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+        }
+        .tableau-title {
+            color: #c9a227;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .tableau-wrapper {
+            display: flex;
+            justify-content: center;
+        }
+        .tableau {
+            border-collapse: collapse;
+            font-family: 'Courier New', monospace;
+            font-size: 0.65rem;
+        }
+        .tableau th, .tableau td {
+            width: 22px;
+            height: 22px;
+            text-align: center;
+            border: 1px solid #3a3a5c;
+        }
+        .tableau th {
+            background: #c9a227;
+            color: #1a1a2e;
+            font-weight: bold;
+        }
+        .tableau th.corner {
+            background: #1a1a2e;
+        }
+        .tableau th.row-header {
+            background: #4a3a1c;
+            color: #c9a227;
+        }
+        .tableau td {
+            background: #1a1a2e;
+            color: #888;
+            transition: all 0.15s;
+        }
+        .tableau td.highlight-row {
+            background: #3a2a1c;
+            color: #c9a227;
+        }
+        .tableau td.highlight-col {
+            background: #2a2a4c;
+            color: #88a0ff;
+        }
+        .tableau td.highlight-cell {
+            background: #c9a227;
+            color: #1a1a2e;
+            font-weight: bold;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px #c9a227;
+        }
+        .tableau th.highlight-col {
+            background: #6080ff;
+            color: #fff;
+        }
+        .tableau th.highlight-row {
+            background: #c9a227;
+            color: #1a1a2e;
+        }
+
+        /* Step indicator */
+        .step-control {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .step-btn {
+            padding: 8px 20px;
+            border: 2px solid #c9a227;
+            background: transparent;
+            color: #c9a227;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .step-btn:hover {
+            background: rgba(201, 162, 39, 0.2);
+        }
+        .step-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .step-info {
+            color: #a7b0c2;
+            font-size: 0.9rem;
+        }
+        .step-info .num {
+            color: #c9a227;
+            font-weight: bold;
+        }
+
+        /* Info */
+        .info {
+            background: #282846;
+            border-radius: 12px;
+            padding: 20px;
+            color: #a7b0c2;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info strong {
+            color: #c9a227;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            h1 { font-size: 1.3rem; }
+            .input-section { grid-template-columns: 1fr; gap: 15px; }
+            .tableau { font-size: 0.5rem; }
+            .tableau th, .tableau td { width: 16px; height: 16px; }
+            .char-box { width: 22px; height: 26px; font-size: 0.8rem; }
+            .step-btn { padding: 6px 12px; font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Vigenere Cipher</h1>
+        <p class="subtitle">"Le chiffre indechiffrable" - Unbreakable for 300 years</p>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label class="input-label">PLAINTEXT</label>
+                <input type="text" id="plaintext" value="ATTACKATDAWN" oninput="updateCipher()" maxlength="20">
+            </div>
+            <div class="input-group">
+                <label class="input-label">KEYWORD</label>
+                <input type="text" id="keyword" value="LEMON" oninput="updateCipher()" maxlength="10">
+            </div>
+        </div>
+
+        <div class="output-section">
+            <div class="output-row">
+                <span class="output-label">Plaintext:</span>
+                <div class="char-display" id="plaintextDisplay"></div>
+            </div>
+            <div class="output-row">
+                <span class="output-label">Keyword:</span>
+                <div class="char-display" id="keywordDisplay"></div>
+            </div>
+            <div class="output-row">
+                <span class="output-label">Ciphertext:</span>
+                <div class="char-display" id="ciphertextDisplay"></div>
+            </div>
+        </div>
+
+        <div class="tableau-section">
+            <div class="step-control">
+                <button class="step-btn" id="prevBtn" onclick="stepPrev()">Prev</button>
+                <span class="step-info">Step <span class="num" id="currentStepNum">0</span> of <span class="num" id="maxStepNum">0</span></span>
+                <button class="step-btn" id="nextBtn" onclick="stepNext()">Next</button>
+                <button class="step-btn" onclick="autoPlay()">Auto</button>
+            </div>
+            <div class="tableau-title">Vigenere Tableau (use Prev/Next to step through)</div>
+            <div class="tableau-wrapper">
+                <table class="tableau" id="tableau"></table>
+            </div>
+        </div>
+
+        <div class="info">
+            <strong>How it works:</strong> Each letter of the keyword determines which row to use.
+            Find the plaintext letter in the top row, then look down to the keyword row to find the cipher letter.
+            The keyword repeats to match the plaintext length.
+            <br><br>
+            <strong>History:</strong> Invented in the 16th century, it was called "le chiffre indechiffrable"
+            (the unbreakable cipher) and wasn't cracked until 1863 - over 300 years later!
+        </div>
+    </div>
+
+    <script>
+        const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        let currentStep = -1;
+        let maxSteps = 0;
+        let autoInterval = null;
+
+        function buildTableau() {
+            const tableau = document.getElementById('tableau');
+            tableau.textContent = '';
+
+            // Header row
+            const headerRow = document.createElement('tr');
+            const cornerTh = document.createElement('th');
+            cornerTh.className = 'corner';
+            headerRow.appendChild(cornerTh);
+
+            for (let i = 0; i < 26; i++) {
+                const th = document.createElement('th');
+                th.textContent = alphabet[i];
+                th.dataset.col = i;
+                headerRow.appendChild(th);
+            }
+            tableau.appendChild(headerRow);
+
+            // Data rows
+            for (let row = 0; row < 26; row++) {
+                const tr = document.createElement('tr');
+
+                const rowHeader = document.createElement('th');
+                rowHeader.className = 'row-header';
+                rowHeader.textContent = alphabet[row];
+                rowHeader.dataset.row = row;
+                tr.appendChild(rowHeader);
+
+                for (let col = 0; col < 26; col++) {
+                    const td = document.createElement('td');
+                    td.textContent = alphabet[(row + col) % 26];
+                    td.dataset.row = row;
+                    td.dataset.col = col;
+                    tr.appendChild(td);
+                }
+                tableau.appendChild(tr);
+            }
+        }
+
+        function updateCipher() {
+            const plaintext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const keyword = document.getElementById('keyword').value.toUpperCase().replace(/[^A-Z]/g, '');
+
+            if (!plaintext || !keyword) {
+                clearDisplays();
+                return;
+            }
+
+            // Expand keyword to match plaintext length
+            let expandedKey = '';
+            for (let i = 0; i < plaintext.length; i++) {
+                expandedKey += keyword[i % keyword.length];
+            }
+
+            // Generate ciphertext
+            let ciphertext = '';
+            for (let i = 0; i < plaintext.length; i++) {
+                const pIndex = alphabet.indexOf(plaintext[i]);
+                const kIndex = alphabet.indexOf(expandedKey[i]);
+                ciphertext += alphabet[(pIndex + kIndex) % 26];
+            }
+
+            // Update displays
+            updateCharDisplay('plaintextDisplay', plaintext, 'plaintext');
+            updateCharDisplay('keywordDisplay', expandedKey, 'keyword');
+            updateCharDisplay('ciphertextDisplay', ciphertext, 'ciphertext');
+
+            maxSteps = plaintext.length;
+            currentStep = -1;
+            updateStepInfo();
+            highlightTableau(-1, -1);
+        }
+
+        function updateCharDisplay(id, text, className) {
+            const container = document.getElementById(id);
+            container.textContent = '';
+            text.split('').forEach((char, i) => {
+                const box = document.createElement('div');
+                box.className = 'char-box ' + className;
+                box.textContent = char;
+                box.dataset.index = i;
+                container.appendChild(box);
+            });
+        }
+
+        function clearDisplays() {
+            ['plaintextDisplay', 'keywordDisplay', 'ciphertextDisplay'].forEach(id => {
+                document.getElementById(id).textContent = '';
+            });
+            maxSteps = 0;
+            currentStep = -1;
+            updateStepInfo();
+        }
+
+        function highlightTableau(keyIndex, plainIndex) {
+            // Clear all highlights
+            document.querySelectorAll('.tableau td, .tableau th').forEach(el => {
+                el.classList.remove('highlight-row', 'highlight-col', 'highlight-cell');
+            });
+
+            if (keyIndex < 0 || plainIndex < 0) return;
+
+            // Highlight column header
+            document.querySelectorAll('.tableau tr:first-child th').forEach(th => {
+                if (parseInt(th.dataset.col) === plainIndex) {
+                    th.classList.add('highlight-col');
+                }
+            });
+
+            // Highlight row header
+            document.querySelectorAll('.tableau th.row-header').forEach(th => {
+                if (parseInt(th.dataset.row) === keyIndex) {
+                    th.classList.add('highlight-row');
+                }
+            });
+
+            // Highlight row and column cells
+            document.querySelectorAll('.tableau td').forEach(td => {
+                const row = parseInt(td.dataset.row);
+                const col = parseInt(td.dataset.col);
+
+                if (row === keyIndex && col === plainIndex) {
+                    td.classList.add('highlight-cell');
+                } else if (row === keyIndex) {
+                    td.classList.add('highlight-row');
+                } else if (col === plainIndex) {
+                    td.classList.add('highlight-col');
+                }
+            });
+        }
+
+        function highlightCharBoxes(step) {
+            document.querySelectorAll('.char-box').forEach(box => {
+                box.classList.toggle('active', parseInt(box.dataset.index) === step);
+            });
+        }
+
+        function stepTo(step) {
+            const plaintext = document.getElementById('plaintext').value.toUpperCase().replace(/[^A-Z]/g, '');
+            const keyword = document.getElementById('keyword').value.toUpperCase().replace(/[^A-Z]/g, '');
+
+            if (!plaintext || !keyword || step < 0 || step >= plaintext.length) {
+                highlightTableau(-1, -1);
+                highlightCharBoxes(-1);
+                return;
+            }
+
+            const plainChar = plaintext[step];
+            const keyChar = keyword[step % keyword.length];
+            const plainIndex = alphabet.indexOf(plainChar);
+            const keyIndex = alphabet.indexOf(keyChar);
+
+            highlightTableau(keyIndex, plainIndex);
+            highlightCharBoxes(step);
+        }
+
+        function stepNext() {
+            if (currentStep < maxSteps - 1) {
+                currentStep++;
+                stepTo(currentStep);
+                updateStepInfo();
+            }
+        }
+
+        function stepPrev() {
+            if (currentStep > 0) {
+                currentStep--;
+                stepTo(currentStep);
+                updateStepInfo();
+            } else if (currentStep === 0) {
+                currentStep = -1;
+                stepTo(-1);
+                updateStepInfo();
+            }
+        }
+
+        function autoPlay() {
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+                return;
+            }
+
+            currentStep = -1;
+            autoInterval = setInterval(() => {
+                if (currentStep < maxSteps - 1) {
+                    currentStep++;
+                    stepTo(currentStep);
+                    updateStepInfo();
+                } else {
+                    clearInterval(autoInterval);
+                    autoInterval = null;
+                }
+            }, 800);
+        }
+
+        function updateStepInfo() {
+            const display = currentStep < 0 ? 0 : currentStep + 1;
+            document.getElementById('currentStepNum').textContent = display;
+            document.getElementById('maxStepNum').textContent = maxSteps;
+            document.getElementById('prevBtn').disabled = currentStep < 0;
+            document.getElementById('nextBtn').disabled = currentStep >= maxSteps - 1;
+        }
+
+        // Initialize
+        buildTableau();
+        updateCipher();
+    </script>
+</body>
+</html>
